@@ -1,0 +1,378 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "team": "9015950061",
+        "space": "90153573035",
+        "folder": "90155656264",
+        "list": "901509482348",
+        "name": "={{ $('Gmail Trigger').item.json.Subject }}",
+        "additionalFields": {
+          "content": "={{ $json.tareas }}",
+          "notifyAll": true,
+          "priority": "={{ $json.prioridad }}",
+          "status": "per fer",
+          "timeEstimate": "={{ $('Comprender JSON').item.json.tiempo_aproximado }}"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -140
+      ],
+      "id": "9e15565d-f78c-469c-9add-af4b978d6c62",
+      "name": "ClickUp",
+      "credentials": {
+        "clickUpOAuth2Api": {
+          "id": "PyapdaTVKgXPv8re",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -700,
+        0
+      ],
+      "id": "793d79f1-156e-40ad-81f4-f96df7737dd3",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "54Hychvm7NSfMGFm",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu tarea es indicar la tarea recibida a realizar, hazlo en formato de lista ( - ) TODO EN JSON y haz espacios abajo en caso de ser necesario para añadir las tareas que se indican en el correo, tambien devuelve un segundo mensaje en formato json indicando la prioridad (1, 2 o 3) de menos a mas dificil y otro indicando el tiempo aproximado que lleva hacer la tarea. Ssa max 200 caracteres y devuelvelo en formato JSON (importante), usa json de : \"tiempo_aproximado\" y \"prioridad\"",
+              "role": "system"
+            },
+            {
+              "content": "=Tarea:  \n{{ $json.subject }}\n\nContenido: \n{{ $('Filtro campos').item.json.missatge }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -160,
+        -140
+      ],
+      "id": "145e0515-dc6e-4f2e-9d64-3b1b25d239a1",
+      "name": "OpenAI",
+      "alwaysOutputData": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "o73nMUZuyLwM0Egf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -700,
+        -280
+      ],
+      "id": "d89f56e9-9a32-47f4-8648-36b0cbf9fa77",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "cODvMdJxQ5fpR1cs",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cc224395-2dfc-4d03-bb5d-0355e0245bd0",
+              "leftValue": "={{ $json.enviatPer || $json.enviatPer2 }}",
+              "rightValue": "=mail@mail.net",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "e79b5630-a76d-4d66-b168-18d402df72d1",
+              "leftValue": "={{ $json.enviatPer || $json.enviatPer2 }}",
+              "rightValue": "mail@mail.net",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c06c893b-fe05-4cd4-9f03-a629be93b9b6",
+              "leftValue": "={{ $json.enviatPer || $json.enviatPer2 }}",
+              "rightValue": "mail@mail.com",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "a397d91f-5caf-45bd-929f-1b54ddc18be2",
+              "leftValue": "={{ $json.enviatPer || $json.enviatPer2 }}",
+              "rightValue": "mail@mail",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "a228b733-929b-4100-9836-ce751bdd1274",
+              "leftValue": "={{ $json.enviatPer || $json.enviatPer2 }}",
+              "rightValue": "mail@mail.com",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        -140
+      ],
+      "id": "7c1571da-c564-4b1e-87be-9e52dc7d008e",
+      "name": "Filtro de emails"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8dc819a8-6349-4d82-b06f-63f7610d553a",
+              "name": "missatge",
+              "value": "={{ $json.textPlain }}",
+              "type": "string"
+            },
+            {
+              "id": "8d25766a-3a35-42c5-82e2-be6a6d9dbc40",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "11ddf4dc-66b5-4345-aed3-2f2fdb2d9db1",
+              "name": "missatge",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "653cfe72-f0bc-4f25-a374-b5d837c824fb",
+              "name": "subject",
+              "value": "={{ $json.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "7b473f4f-c8a9-460d-b3f3-18e04f5de809",
+              "name": "enviatPer",
+              "value": "={{ $json.From.match(/<([^>]+)>/) ? $json.From.match(/<([^>]+)>/)[1] : $json.From.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "46d2e11f-b95a-4c4a-9160-1da08202825e",
+              "name": "enviatPer2",
+              "value": "={{ $json.metadata['return-path'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -500,
+        -140
+      ],
+      "id": "a5185c7a-9e7f-4132-93d8-616623946c8e",
+      "name": "Filtro campos"
+    },
+    {
+      "parameters": {
+        "jsCode": "/***********************************************\n * 1) Leer la respuesta que da ChatGPT\n ***********************************************/\nconst contentRaw = $input.first().json.choices[0].message.content || '';\n\n// (Opcional) Mostrar qué recibimos (para debug)\n// console.log(\"Contenido crudo:\", contentRaw);\n\n/***********************************************\n * 2) Convertir caracteres escapados (\\n, \\\") si hace falta\n ***********************************************/\nconst contentFixed = contentRaw\n  // Ajusta si ChatGPT manda \\n en lugar de saltos de línea\n  .replace(/\\\\n/g, '\\n')\n  // Ajusta si ChatGPT manda \\\"\n  .replace(/\\\\\"/g, '\"');\n\n/***********************************************\n * 3) Buscar todos los bloques del tipo:\n *    ```json\n *      { ... }\n *    ```\n ***********************************************/\nconst regex = /```json\\s*([\\s\\S]*?)\\s*```/g;\nconst matches = [...contentFixed.matchAll(regex)];\n\n/***********************************************\n * 4) Unir todos los bloques JSON en un solo objeto\n ***********************************************/\nlet resultadoFinal = {};\n\nfor (const match of matches) {\n  try {\n    const bloqueStr = match[1];      // El JSON en texto\n    const bloqueObj = JSON.parse(bloqueStr);  // Lo parseamos\n    // Combinamos con el resultado final\n    Object.assign(resultadoFinal, bloqueObj);\n  } catch (err) {\n    resultadoFinal.error = 'Error parseando un bloque JSON';\n  }\n}\n\n/***********************************************\n * Paso 5: Devolver el objeto final\n ***********************************************/\nif (resultadoFinal.tareas && Array.isArray(resultadoFinal.tareas)) {\n  // Unir todas las tareas con salto de línea (o el separador que prefieras)\n  resultadoFinal.tareas = resultadoFinal.tareas.join('\\n');\n}\n\nreturn [{ json: resultadoFinal }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -140
+      ],
+      "id": "e01da4da-a7d6-455f-b17b-0a0af2f9c6cd",
+      "name": "Comprender JSON"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "523c47a6-5a06-4e5e-a8af-c853fc5e7dc6",
+              "name": "tareas",
+              "value": "={{ $json.tareas }}\n\nTiempo aproximado: {{ $json.tiempo_aproximado }}",
+              "type": "string"
+            },
+            {
+              "id": "7f7749dd-a178-4b73-84b0-cc0239b05e0b",
+              "name": "prioridad",
+              "value": "={{ $json.prioridad }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        340,
+        -140
+      ],
+      "id": "32f0204a-d25b-4d39-9ba0-def4a49adb29",
+      "name": "Modificar JSON"
+    }
+  ],
+  "connections": {
+    "ClickUp": {
+      "main": [
+        []
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filtro campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Comprender JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Filtro campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro de emails": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro campos": {
+      "main": [
+        [
+          {
+            "node": "Filtro de emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comprender JSON": {
+      "main": [
+        [
+          {
+            "node": "Modificar JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modificar JSON": {
+      "main": [
+        [
+          {
+            "node": "ClickUp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9d75b25ce16ed236dcd6d42bba853e02bca2f882ef01c213e114887c70f0184"
+  }
+}
