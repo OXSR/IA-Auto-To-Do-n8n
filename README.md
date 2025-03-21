@@ -40,10 +40,5 @@ Este workflow de **n8n** automatiza la creación de tareas en **ClickUp** a part
   - Gmail o servidor IMAP  
   - OpenAI  
   - ClickUp  
-
-## 📎 Nota
-
-El flujo está diseñado para ser modular y fácilmente adaptable a otras herramientas como Notion, Trello o Asana.
-
 ---
 
